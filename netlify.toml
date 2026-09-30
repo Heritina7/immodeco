@@ -1,12 +1,10 @@
 [build]
-  # Dossier de build de votre frontend React/Vite
   publish = "frontend/dist"
-  # Commande pour installer les dépendances du front et les compiler
   command = "cd frontend && npm install && npm run build"
-  # Dossier contenant la fonction serverless
   functions = "netlify/functions"
 
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
+  force = true
