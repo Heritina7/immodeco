@@ -7,7 +7,7 @@ import ordersRouter from './routes/orders.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import uploadRouter from './routes/upload.js'
-import serverless from 'serverless-http' // 👈 1. Importez serverless-http
+import serverless from 'serverless-http'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -20,26 +20,26 @@ app.use(cors({
 }))
 app.use(express.json())
 
-// Health check
+// Health check (gardé avec /api/health car Netlify transmet le chemin complet si le match inclut /api)
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Furniture API is running' })
 })
 
-// Routes principales
-app.use('/api/categories', categoriesRouter)
-app.use('/api/products', productsRouter)
-app.use('/api/orders', ordersRouter)
+// Routes principales (sans /api, car Netlify redirige /api/* vers la fonction et enlève le préfixe)
+app.use('/categories', categoriesRouter)
+app.use('/products', productsRouter)
+app.use('/orders', ordersRouter)
 
-// ✅ ROUTES D'UPLOAD ET FICHIERS STATIQUES (Placées AVANT le 404)
-app.use('/api/upload', uploadRouter)
+// Routes d'upload et fichiers statiques
+app.use('/upload', uploadRouter)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 
-// 🛑 404 (Doit toujours être positionné à la fin, juste avant le gestionnaire d'erreurs global)
+// Gestionnaire 404 (Doit toujours être positionné à la fin, juste avant les erreurs)
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' })
 })
 
-// Error handler
+// Error handler global
 app.use((err, req, res, next) => {
   console.error(err)
   res.status(err.status || 500).json({
@@ -47,7 +47,7 @@ app.use((err, req, res, next) => {
   })
 })
 
-// 👈 2. Conditionner le app.listen pour le développement local uniquement
+// Démarrage local pour le développement
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`)
@@ -55,5 +55,5 @@ if (process.env.NODE_ENV !== 'production') {
   })
 }
 
-// 👈 3. Exporter l'application enveloppée pour Netlify
+// Exportation serverless obligatoire pour Netlify
 export const handler = serverless(app)
