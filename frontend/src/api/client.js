@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+const API_URL = import.meta.env.VITE_API_URL || ''
 
 async function request(endpoint, options = {}) {
   const res = await fetch(`${API_URL}${endpoint}`, {
@@ -85,7 +85,6 @@ export async function uploadImages(files) {
     formData.append('images', file)
   }
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
   const res = await fetch(`${API_URL}/upload/images`, {
     method: 'POST',
     body: formData,
