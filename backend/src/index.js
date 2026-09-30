@@ -3,7 +3,7 @@ import express from 'express'
 import cors from 'cors'
 import categoriesRouter from './routes/categories.js'
 import productsRouter from './routes/products.js'
-import ordersRouter from './routes/orders.js'
+import ordersRouter from './ordersRouter.js' // Ajustez selon votre chemin (ex: './routes/orders.js')
 import path from 'path'
 import { fileURLToPath } from 'url'
 import uploadRouter from './routes/upload.js'
@@ -20,19 +20,30 @@ app.use(cors({
 }))
 app.use(express.json())
 
-// Health check (gardé avec /api/health car Netlify transmet le chemin complet si le match inclut /api)
+// Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Furniture API is running' })
 })
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Furniture API is running' })
+})
 
-// Routes principales (sans /api, car Netlify redirige /api/* vers la fonction et enlève le préfixe)
+// Routes principales doublées (avec et sans /api pour éviter tout conflit de redirection Netlify)
+app.use('/api/categories', categoriesRouter)
 app.use('/categories', categoriesRouter)
+
+app.use('/api/products', productsRouter)
 app.use('/products', productsRouter)
+
+app.use('/api/orders', ordersRouter)
 app.use('/orders', ordersRouter)
 
-// Routes d'upload et fichiers statiques
+// Routes d'upload et fichiers statiques doublées
+app.use('/api/upload', uploadRouter)
 app.use('/upload', uploadRouter)
+
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
+app.use('/api/uploads', express.static(path.join(__dirname, '../uploads')))
 
 // Gestionnaire 404 (Doit toujours être positionné à la fin, juste avant les erreurs)
 app.use((req, res) => {
