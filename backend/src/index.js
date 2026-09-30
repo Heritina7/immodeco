@@ -5,7 +5,12 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import serverless from 'serverless-http'
 
-// Initialisation propre et unique de __dirname
+// Importations statiques (standard et sans top-level await)
+import categoriesRouter from './routes/categories.js'
+import productsRouter from './routes/products.js'
+import ordersRouter from './routes/orders.js'
+import uploadRouter from './routes/upload.js'
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -19,18 +24,6 @@ app.use(cors({
 }))
 app.use(express.json())
 
-// Importation sécurisée des routes
-let categoriesRouter, productsRouter, ordersRouter, uploadRouter
-
-try {
-  categoriesRouter = (await import('./routes/categories.js')).default
-  productsRouter = (await import('./routes/products.js')).default
-  ordersRouter = (await import('./routes/orders.js')).default
-  uploadRouter = (await import('./routes/upload.js')).default
-} catch (err) {
-  console.error("Erreur lors du chargement des routes :", err)
-}
-
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Furniture API is running' })
@@ -40,22 +33,17 @@ app.get('/health', (req, res) => {
 })
 
 // Enregistrement des routes
-if (categoriesRouter) {
-  app.use('/api/categories', categoriesRouter)
-  app.use('/categories', categoriesRouter)
-}
-if (productsRouter) {
-  app.use('/api/products', productsRouter)
-  app.use('/products', productsRouter)
-}
-if (ordersRouter) {
-  app.use('/api/orders', ordersRouter)
-  app.use('/orders', ordersRouter)
-}
-if (uploadRouter) {
-  app.use('/api/upload', uploadRouter)
-  app.use('/upload', uploadRouter)
-}
+app.use('/api/categories', categoriesRouter)
+app.use('/categories', categoriesRouter)
+
+app.use('/api/products', productsRouter)
+app.use('/products', productsRouter)
+
+app.use('/api/orders', ordersRouter)
+app.use('/orders', ordersRouter)
+
+app.use('/api/upload', uploadRouter)
+app.use('/upload', uploadRouter)
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 app.use('/api/uploads', express.static(path.join(__dirname, '../uploads')))
