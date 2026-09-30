@@ -1,5 +1,3 @@
-import { handler as appHandler } from '../../backend/src/index.mjs'
+import { handler } from '../../backend/src/index.mjs';
 
-export const handler = async (event, context) => {
-  return appHandler(event, context)
-}
+export { handler };
