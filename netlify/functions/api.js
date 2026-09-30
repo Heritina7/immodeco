@@ -1,4 +1,4 @@
 // netlify/functions/api.js
-import { handler } from '../../backend/index.js'; 
+import { handler } from '../../backend/src/index.js'; 
 
 export { handler };
