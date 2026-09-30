@@ -1,7 +1,9 @@
-const API_URL = import.meta.env.VITE_API_URL || ''
+const API_URL = import.meta.env.VITE_API_URL || '/api'
 
 async function request(endpoint, options = {}) {
-  const res = await fetch(`${API_URL}${endpoint}`, {
+  // S'assure que l'endpoint commence bien par / si nécessaire
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+  const res = await fetch(`${API_URL}${cleanEndpoint}`, {
     headers: {
       'Content-Type': 'application/json',
       ...options.headers,
