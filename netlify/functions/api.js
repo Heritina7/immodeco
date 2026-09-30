@@ -1,4 +1,5 @@
-// netlify/functions/api.js
-import { handler } from '../../backend/src/index.mjs'
+import { handler as appHandler } from '../../backend/src/index.mjs'
 
-export { handler }
+export const handler = async (event, context) => {
+  return appHandler(event, context)
+}
